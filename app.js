@@ -113,13 +113,27 @@ class Shape {
     return edgeCoords
   }
 
-  fall() {
-    if(this.getBottomEdge()[0][0] < length - 1){
-      this.shift[0] += 1
+  fall(){
+    console.log('Pre Shift: ', this.getCoordinates())
+    console.log('Pre Board: ', game.board)
+
+    this.shift[0] += 1
+
+    console.log('Post Shift: ', this.getCoordinates())
+    console.log('Post Board: ', game.board)
+
+    if(this.getBottomEdge()[0][0] === length){
+      this.shift[0] -= 1
+      return
+    } else if (!(game.checkCollision(this.getCoordinates()))){
       game.updateCoords()
+      return
+    } else {
+      this.shift[0] -= 1
     }
   }
 }
+
 
 /*---------------------------- Variables (state) ----------------------------*/
 let game = {
@@ -130,9 +144,8 @@ let game = {
   placeShape(shape){
     if(this.activeShape) delete this.activeShape
     this.activeShape = shape
-    let board = this.board
-    shape.getCoordinates().forEach(function (value) {
-      board[value[0]][value[1]] = '1'
+    shape.getCoordinates().forEach(value => {
+      this.board[value[0]][value[1]] = '1'
     })
     this.trailCoords = shape.getCoordinates()
     this.render()
@@ -140,9 +153,8 @@ let game = {
 
   updateCoords(){
     this.clearTrail()
-    let board = this.board
-    this.activeShape.getCoordinates().forEach(function (value) {
-      board[value[0]][value[1]] = '1'
+    this.activeShape.getCoordinates().forEach(value => {
+      this.board[value[0]][value[1]] = '1'
     })
     this.trailCoords = this.activeShape.getCoordinates()
     this.render()
@@ -150,9 +162,8 @@ let game = {
 
   clearTrail(){
     if (this.trailCoords){
-      let board = this.board
-      this.trailCoords.forEach(function(value) {
-        board[value[0]][value[1]] = "0"
+      this.trailCoords.forEach(value => {
+        this.board[value[0]][value[1]] = '0'
       })
     }
   },
@@ -172,8 +183,21 @@ let game = {
     }
   },
 
-  step() {
+  checkCollision(futurePlacement) {
 
+    
+
+    
+    futurePlacement.forEach(value => {
+      if(this.board[value[0]][value[1]] === '1') return true
+      ///console.log('Future Placement: ', value)
+
+
+    })
+    return false
+  },
+
+  step() {
     let bottom1 = this.activeShape.getBottomEdge()
     this.activeShape.fall()
     let bottom2 = this.activeShape.getBottomEdge()
@@ -226,7 +250,7 @@ function initBoard() {
 
 function advance(){
   if(game.activeShape !== null){
-    game.step()
+    //game.step()
   }
 }
 
