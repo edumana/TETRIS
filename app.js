@@ -34,6 +34,17 @@ const Z = math.matrix([
   [0,1,1],
   [0,0,0]])
 
+const R4 = math.matrix([
+    [0,0,0,1],
+    [0,0,1,0],
+    [0,1,0,0],
+    [1,0,0,0]])
+
+const R3 = math.matrix([
+      [0,0,1],
+      [0,1,0],
+      [1,0,0]])
+
 const shapes = [I, J, L, O, S, T, Z]
 const boundary = 18
 const length = boundary * 2
@@ -47,17 +58,20 @@ class Shape {
 
   rotate() {
     if (math.size(this.shape)._data[0] === 4) {
-      this.shape = math.multiply(math.transpose(this.shape), math.matrix([
-        [0,0,0,1],
-        [0,0,1,0],
-        [0,1,0,0],
-        [1,0,0,0]]))
+      this.shape = math.multiply(math.transpose(this.shape), R4)
     } else if (math.size(this.shape)._data[0] === 3) {
-      this.shape = math.multiply(math.transpose(this.shape), math.matrix([
-        [0,0,1],
-        [0,1,0],
-        [1,0,0]]))
+      this.shape = math.multiply(math.transpose(this.shape), R3)
     }
+
+    console.log(game.checkCollision(this.getCoordinates(), game.board))
+    if(game.checkCollision(this.getCoordinates(), game.board)){
+      if (math.size(this.shape)._data[0] === 4) {
+        this.shape = math.multiply(R4,math.transpose(this.shape))
+      } else if (math.size(this.shape)._data[0] === 3) {
+        this.shape = math.multiply(R3, math.transpose(this.shape))
+      }
+    }
+
     while(this.getLeftmost() < 0) this.moveRight()
     while(this.getRightmost() > boundary - 1) this.moveLeft()
     game.updateCoords('1')
@@ -73,26 +87,20 @@ class Shape {
   }
 
   moveRight() { 
-    if (this.getRightmost() < boundary-1) this.shift[1] += 1
-    game.updateCoords('1')
+    if (this.getRightmost() < boundary - 1) this.shift[1] += 1
+    if(game.checkCollision(this.getCoordinates(), game.board)){
+      this.shift[1] -= 1
+    } else {
+      game.updateCoords('1')
+    }
   }
 
   moveLeft() {
-    if (this.getLeftmost() > 0) this.shift[1] -= 1
-    game.updateCoords('1')
-
-
-    const currentBoard = JSON.parse(JSON.stringify(game.board))
-    this.shift[0] += 1
-
-    if(this.getBottomEdge()[0][0] === length){
-      this.shift[0] -= 1
-      return
-    } else if(!(game.checkCollision(this.getCoordinates(), currentBoard))){
-      game.updateCoords('1')
-      return
+    if(this.getLeftmost() > 0) this.shift[1] -= 1
+    if(game.checkCollision(this.getCoordinates(), game.board)){
+      this.shift[1] += 1
     } else {
-      this.shift[0] -= 1
+      game.updateCoords('1')
     }
   }
 
@@ -127,9 +135,6 @@ class Shape {
     return edgeCoords
   }
 
-  checkCollision(board, futureShape) {
-
-  }
 
   fall(){
     const currentBoard = JSON.parse(JSON.stringify(game.board))
@@ -197,6 +202,7 @@ let game = {
   },
 
   checkCollision(futurePlacement, currentBoard) {
+
     let collision = false
     futurePlacement.forEach(value => {
       if(currentBoard[value[0]][value[1]] === '*') collision = true
