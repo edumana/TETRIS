@@ -60,7 +60,7 @@ class Shape {
     }
     while(this.getLeftmost() < 0) this.moveRight()
     while(this.getRightmost() > boundary - 1) this.moveLeft()
-    game.updateCoords()
+    game.updateCoords('1')
   }
 
   getCoordinates() {
@@ -74,12 +74,26 @@ class Shape {
 
   moveRight() { 
     if (this.getRightmost() < boundary-1) this.shift[1] += 1
-    game.updateCoords()
+    game.updateCoords('1')
   }
 
   moveLeft() {
     if (this.getLeftmost() > 0) this.shift[1] -= 1
-    game.updateCoords()
+    game.updateCoords('1')
+
+
+    const currentBoard = JSON.parse(JSON.stringify(game.board))
+    this.shift[0] += 1
+
+    if(this.getBottomEdge()[0][0] === length){
+      this.shift[0] -= 1
+      return
+    } else if(!(game.checkCollision(this.getCoordinates(), currentBoard))){
+      game.updateCoords('1')
+      return
+    } else {
+      this.shift[0] -= 1
+    }
   }
 
   getRightmost() {
@@ -113,20 +127,19 @@ class Shape {
     return edgeCoords
   }
 
+  checkCollision(board, futureShape) {
+
+  }
+
   fall(){
-    console.log('Pre Shift: ', this.getCoordinates())
-    console.log('Pre Board: ', game.board)
-
+    const currentBoard = JSON.parse(JSON.stringify(game.board))
     this.shift[0] += 1
-
-    console.log('Post Shift: ', this.getCoordinates())
-    console.log('Post Board: ', game.board)
 
     if(this.getBottomEdge()[0][0] === length){
       this.shift[0] -= 1
       return
-    } else if (!(game.checkCollision(this.getCoordinates()))){
-      game.updateCoords()
+    } else if(!(game.checkCollision(this.getCoordinates(), currentBoard))){
+      game.updateCoords('1')
       return
     } else {
       this.shift[0] -= 1
@@ -151,10 +164,10 @@ let game = {
     this.render()
   },
 
-  updateCoords(){
+  updateCoords(str){
     this.clearTrail()
     this.activeShape.getCoordinates().forEach(value => {
-      this.board[value[0]][value[1]] = '1'
+      this.board[value[0]][value[1]] = str
     })
     this.trailCoords = this.activeShape.getCoordinates()
     this.render()
@@ -183,25 +196,23 @@ let game = {
     }
   },
 
-  checkCollision(futurePlacement) {
-
-    
-
-    
+  checkCollision(futurePlacement, currentBoard) {
+    let collision = false
     futurePlacement.forEach(value => {
-      if(this.board[value[0]][value[1]] === '1') return true
-      ///console.log('Future Placement: ', value)
-
-
+      if(currentBoard[value[0]][value[1]] === '*') collision = true
     })
-    return false
+    return collision ? true : false
   },
 
   step() {
+    
     let bottom1 = this.activeShape.getBottomEdge()
     this.activeShape.fall()
     let bottom2 = this.activeShape.getBottomEdge()
+
+  
     if(bottom1[0][0] === bottom2[0][0]){
+      this.updateCoords('*')
       let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
       game.placeShape(shape)
     }
