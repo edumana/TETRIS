@@ -50,6 +50,8 @@ const boundary = 6
 const length = boundary * 2
 const message = document.getElementById('message')
 
+const introModal = new bootstrap.Modal(document.getElementById('intro-modal'), {backdrop: true})
+
 
 /*-------------------------------- Classes --------------------------------*/
 class Shape {
@@ -322,6 +324,8 @@ function lost() {
 
 /*-------------------------------- Main --------------------------------*/
 initBoard()
+//introModal.show()
+console.log(introModal)
 let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
 game.placeShape(shape)
 

@@ -33,3 +33,16 @@ div {
   vertical-align: middle;
   z-index: 1;
 }
+
+#intro-modal{
+  background: #000000a6;
+  border: none;
+}
+
+.modal-dialog{
+  border:none;
+}
+
+.modal-footer{
+  justify-content: center;
+}
