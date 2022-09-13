@@ -34,6 +34,33 @@ div {
   z-index: 1;
 }
 
+.modal{
+  border:none;
+}
+
+div{
+  border:none;
+}
+
+#custom-builder {
+  display: grid;
+  position: relative;
+  grid-template-rows: repeat(3, 6vmin);
+  grid-template-columns: repeat(3, 6vmin);
+  grid-gap: 0vmin;
+  z-index: 1;
+  margin: 10px auto;
+  justify-content: center;
+}
+
+.custom-shape {
+  border: 2px solid black;
+  font-size: 8vmin;
+  text-align: center;
+  vertical-align: middle;
+  z-index: 1;
+}
+
 #intro-modal{
   background: #000000a6;
   border: none;
@@ -45,4 +72,104 @@ div {
 
 .modal-footer{
   justify-content: center;
+}
+
+.modal-header{
+  display: block;
+  justify-content: center;
+  border-bottom:solid;
+  border-bottom-color: black;
+}
+
+#subtitle{
+  font-size: 0.55em;
+  font-family: 'Mulish';
+  text-transform: none;
+  font-weight: 400;
+  font-style: italic;
+  border: none;
+  
+  text-align: center;
+  margin: 0 auto;
+}
+
+h6{
+  margin-bottom:20px;
+}
+
+.modal-title{
+  font-family: 'Syncopate', sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 1em;
+  margin: 0 auto 4px auto;
+  letter-spacing: 0px;
+}
+
+#start-button {
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size:0.7em;
+  letter-spacing: 2px;
+  width: 60%;
+  border: none;
+  margin: 20px auto;
+}
+
+.col {
+  border:none;
+}
+
+.btn.btn-primary.size{
+  width: 100%;
+  border: none;
+  font-family: 'Syncopate', sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+
+.row{
+  border:none;
+}
+
+h6{
+  font-family: 'Mulish';
+  text-transform: none;
+}
+
+.container-fluid {
+  border:none;
+  margin: 20px 0;
+  border:none;
+  padding: 0;
+}
+
+.modal-content{
+  padding: 20px 50px;
+  border: none;
+  border:none;
+}
+
+.modal-body{
+  border-top-color: black;
+  border-bottom:solid;
+  border-bottom-color: black;
+}
+
+
+.btn.btn-outline-primary{
+  width:20%;
+  font-family: 'Syncopate';
+  font-weight: bold;
+}
+
+#cus-0{
+  background-color: black;
+}
+#cus-4{
+  background-color: black;
+}
+#cus-8{
+  background-color: black;
 }

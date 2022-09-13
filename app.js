@@ -45,12 +45,13 @@ const R3 = math.matrix([
       [0,1,0], 
       [1,0,0]])
 
-const shapes = [I, J, L, O, S, T, Z]
-const boundary = 6
-const length = boundary * 2
 const message = document.getElementById('message')
 
-const introModal = new bootstrap.Modal(document.getElementById('intro-modal'), {backdrop: true})
+const introModal = new bootstrap.Modal(document.getElementById('intro-modal'))
+const startButton = document.getElementById('start-button')
+const radioButtons = document.querySelectorAll('input[name="options"]')
+const customBuilder = document.getElementById('custom-builder')
+const htmlBoard = document.getElementById('main-board')
 
 
 /*-------------------------------- Classes --------------------------------*/
@@ -60,7 +61,7 @@ class Shape {
     this.shift = [0,0]
   }
 
-  rotate() {
+  rotate(game) {
     if (math.size(this.shape)._data[0] === 4) {
       this.shape = math.multiply(math.transpose(this.shape), R4)
     } else if (math.size(this.shape)._data[0] === 3) {
@@ -90,7 +91,7 @@ class Shape {
     return coords
   }
 
-  moveRight() { 
+  moveRight(game) { 
     if (this.getRightmost() < boundary - 1) this.shift[1] += 1
     if(game.checkCollision(this.getCoordinates(), game.board)){
       this.shift[1] -= 1
@@ -99,7 +100,7 @@ class Shape {
     }
   }
 
-  moveLeft() {
+  moveLeft(game) {
     if(this.getLeftmost() > 0) this.shift[1] -= 1
     if(game.checkCollision(this.getCoordinates(), game.board)){
       this.shift[1] += 1
@@ -140,9 +141,10 @@ class Shape {
   }
 
 
-  fall(){
+  fall(game){
 
     if (game.activeShape !== null){
+
       const currentBoard = JSON.parse(JSON.stringify(game.board))
       this.shift[0] += 1
 
@@ -159,12 +161,12 @@ class Shape {
   }
 }
 
-
-/*---------------------------- Variables (state) ----------------------------*/
-let game = {
-  board: new Array(length).fill('0').map(()=>new Array(boundary).fill('0')),
-  activeShape: null,
-  trailCoords: null,
+class Game {
+  constructor(){
+    this.board = new Array(length).fill('0').map(()=>new Array(boundary).fill('0'))
+    this.activeShape = null
+    this.trailCoords = null
+  }
 
   placeShape(shape){
     if(this.activeShape) delete this.activeShape
@@ -174,7 +176,7 @@ let game = {
     })
     this.trailCoords = shape.getCoordinates()
     this.render()
-  },
+  }
 
   updateCoords(str){
     this.clearTrail()
@@ -183,7 +185,7 @@ let game = {
     })
     this.trailCoords = this.activeShape.getCoordinates()
     this.render()
-  },
+  }
 
   clearTrail(){
     if (this.trailCoords){
@@ -191,7 +193,7 @@ let game = {
         this.board[value[0]][value[1]] = '0'
       })
     }
-  },
+  }
 
   render(){
     for (let i = 0; i < this.board.length; i++){
@@ -200,17 +202,18 @@ let game = {
         divElem.innerHTML = `${this.board[i][j]}`
       }
     }
-  },
+  }
 
   clear(){
 
     delete this.activeShape
-    this.activeShape = null
+    delete this.trailCoords
+    delete this.board
 
-    for (let i = 0; i <= length; i++) {
-      this.board[i] = new Array(boundary).fill("0")
-    }
-  },
+    this.activeShape = null
+    this.trailCoords = null
+    this.board = new Array(length).fill('0').map(()=>new Array(boundary).fill('0'))
+  }
 
   checkCollision(futurePlacement, currentBoard) {
 
@@ -219,7 +222,7 @@ let game = {
       if(currentBoard[value[0]][value[1]] === '*') collision = true
     })
     return collision ? true : false
-  },
+  }
 
   clearIndex(index) {
 
@@ -235,13 +238,12 @@ let game = {
       this.board[0][i] = '0'
     }
     this.render() 
-
-  }, 
+  } 
 
   step() {
     if(this.activeShape !== null){
       let bottom1 = this.activeShape.getBottomEdge()
-      this.activeShape.fall()
+      this.activeShape.fall(this)
       let bottom2 = this.activeShape.getBottomEdge()
 
       if(this.board[0].some(value => value === '*')) lost()
@@ -254,64 +256,122 @@ let game = {
 
         delete this.activeShape
         let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
-        game.placeShape(shape)
+        this.placeShape(shape)
       }
     }  
   } 
 }
 
-const htmlBoard = document.getElementById('main-board')
-htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, 3vmin)`
-htmlBoard.style.gridTemplateRows = `repeat(${length}, 3vmin)`
+/*---------------------------- Variables (state) ----------------------------*/
+let boundary = 6
+let length = boundary * 2
+let shapes = [I, J, L, O, S, T, Z]
+let C = [[1,0,0],[0,1,0],[0,0,1]]
 
 
 
 /*----------------------------- Event Listeners -----------------------------*/
-document.onkeydown = function(e) {
-  switch (e.keyCode) {
-      case 37:
-          
-          game.activeShape.moveLeft()
-          
-          break;
-      case 38:
-          
-          game.activeShape.rotate()
-          
-          break;    
-      case 39:
-        
-        game.activeShape.moveRight()
-        
-        break;
-      case 40:
-        if(game.activeShape !== null){ 
-          game.step()
-          game.step()
-          game.step() 
-          game.step()
-        }
-        break;
-  }
-}
 
-window.setInterval(advance, 400)
+startButton.addEventListener('click', function(e){
+
+  let selectedSize
+  for(const radioButton of radioButtons){
+    if(radioButton.checked){
+      selectedSize = radioButton.value
+    }
+  }
+  introModal.hide()
+  shapes.push(C)
+  boundary = parseInt(selectedSize,10)
+  length = boundary * 2
+  htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, 3vmin)`
+  htmlBoard.style.gridTemplateRows = `repeat(${length}, 3vmin)` 
+  initGame()
+})
+
+customBuilder.addEventListener('click', function(e){
+  let sq = document.getElementById(e.target.id).style
+  switch (e.target.id) {
+    case 'cus-0':
+      C[0][0] === 0 ? (C[0][0] = 1, sq.backgroundColor = 'black') : (C[0][0] = 0, sq.backgroundColor = 'white')
+    break;
+    case 'cus-1':
+      C[0][1] === 0 ? (C[0][1] = 1, sq.backgroundColor = 'black') : (C[0][1] = 0, sq.backgroundColor = 'white')
+    break;
+    case 'cus-2':
+      C[0][2] === 0 ? (C[0][2] = 1, sq.backgroundColor = 'black') : (C[0][2] = 0, sq.backgroundColor = 'white')
+    break;
+    case 'cus-3':
+      C[1][0] === 0 ? (C[1][0] = 1, sq.backgroundColor = 'black') : (C[1][0] = 0, sq.backgroundColor = 'white')
+    break;
+    case 'cus-4':
+      C[1][1] === 0 ? (C[1][1] = 1, sq.backgroundColor = 'black') : (C[1][1] = 0, sq.backgroundColor = 'white')
+    break;
+    case 'cus-5':
+      C[1][2] === 0 ? (C[1][2] = 1, sq.backgroundColor = 'black') : (C[1][2] = 0, sq.backgroundColor = 'white')
+    break;
+    case 'cus-6':
+      C[2][0] === 0 ? (C[2][0] = 1, sq.backgroundColor = 'black') : (C[2][0] = 0, sq.backgroundColor = 'white')
+    break;
+    case 'cus-7':
+      C[2][1] === 0 ? (C[2][1] = 1, sq.backgroundColor = 'black') : (C[2][1] = 0, sq.backgroundColor = 'white')
+    break;
+    case 'cus-8':
+      C[2][2] === 0 ? (C[2][2] = 1, sq.backgroundColor = 'black') : (C[2][2] = 0, sq.backgroundColor = 'white')
+    break;
+    
+  }
+})
+
+
+
 
 
 /*-------------------------------- Functions --------------------------------*/
 
-function initBoard() {
+function initGame() {
+
+  let game = new Game()
+
   for (let i = 0; i < game.board.length; i++){
     for (let j = 0; j < game.board[i].length; j++){
       let divElem = document.createElement('div')
       divElem.id = `${i},${j}`
       divElem.innerHTML = `${game.board[i][j]}`
       htmlBoard.appendChild(divElem)
-    }
+    } 
   }
+
+  let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
+  game.placeShape(shape)
+
+  window.setInterval(advance(game), 400)
+
+  document.addEventListener('keydown', e =>{
+  
+    const keyName = e.key  
+    switch (keyName) {
+      case 'ArrowLeft':
+        game.activeShape.moveLeft(game)
+        break;
+      case ' ':
+        game.activeShape.rotate(game)
+        break;   
+      case 'ArrowRight':
+        game.activeShape.moveRight(game)
+        break;
+      case 'ArrowDown':
+        if (game.activeShape !== null){ 
+          game.step()
+        }
+        break;
+    }
+  })
 }
 
-function advance(){
+ 
+
+function advance(game){
   if(game.activeShape !== null){
     game.step()
   }
@@ -323,11 +383,9 @@ function lost() {
 }
 
 /*-------------------------------- Main --------------------------------*/
-initBoard()
-//introModal.show()
-console.log(introModal)
-let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
-game.placeShape(shape)
+
+introModal.show() 
+
 
 
 
