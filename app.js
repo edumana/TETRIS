@@ -32,22 +32,24 @@ const T = math.matrix([
 const Z = math.matrix([
   [1,1,0],
   [0,1,1],
-  [0,0,0]])
+  [0,0,0]]) 
 
 const R4 = math.matrix([
-    [0,0,0,1],
+    [0,0,0,1], 
     [0,0,1,0],
     [0,1,0,0],
     [1,0,0,0]])
-
+ 
 const R3 = math.matrix([
       [0,0,1],
-      [0,1,0],
+      [0,1,0], 
       [1,0,0]])
 
 const shapes = [I, J, L, O, S, T, Z]
-const boundary = 18
+const boundary = 6
 const length = boundary * 2
+const message = document.getElementById('message')
+
 
 /*-------------------------------- Classes --------------------------------*/
 class Shape {
@@ -137,17 +139,20 @@ class Shape {
 
 
   fall(){
-    const currentBoard = JSON.parse(JSON.stringify(game.board))
-    this.shift[0] += 1
 
-    if(this.getBottomEdge()[0][0] === length){
-      this.shift[0] -= 1
-      return
-    } else if(!(game.checkCollision(this.getCoordinates(), currentBoard))){
-      game.updateCoords('1')
-      return
-    } else {
-      this.shift[0] -= 1
+    if (game.activeShape !== null){
+      const currentBoard = JSON.parse(JSON.stringify(game.board))
+      this.shift[0] += 1
+
+      if(this.getBottomEdge()[0][0] === length){
+        this.shift[0] -= 1
+        return
+      } else if(!(game.checkCollision(this.getCoordinates(), currentBoard))){
+        game.updateCoords('1')
+        return
+      } else {
+        this.shift[0] -= 1
+      }
     }
   }
 }
@@ -196,7 +201,11 @@ let game = {
   },
 
   clear(){
-    for (let i = 0; i <= lenght; i++) {
+
+    delete this.activeShape
+    this.activeShape = null
+
+    for (let i = 0; i <= length; i++) {
       this.board[i] = new Array(boundary).fill("0")
     }
   },
@@ -210,24 +219,48 @@ let game = {
     return collision ? true : false
   },
 
-  step() {
-    
-    let bottom1 = this.activeShape.getBottomEdge()
-    this.activeShape.fall()
-    let bottom2 = this.activeShape.getBottomEdge()
+  clearIndex(index) {
 
-  
-    if(bottom1[0][0] === bottom2[0][0]){
-      this.updateCoords('*')
-      let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
-      game.placeShape(shape)
+    this.board[index].forEach((value, index, array) => {array[index] = '0'} )
+    
+    for(let i = index; i > 0; i--){
+      for(let j = 0; j < this.board[i].length; j++){
+        this.board[i][j] = JSON.parse(JSON.stringify(this.board[i-1][j]))
+      }
     }
-  }
+
+    for(let i = 0; i < this.board[0].length; i++){
+      this.board[0][i] = '0'
+    }
+    this.render() 
+
+  }, 
+
+  step() {
+    if(this.activeShape !== null){
+      let bottom1 = this.activeShape.getBottomEdge()
+      this.activeShape.fall()
+      let bottom2 = this.activeShape.getBottomEdge()
+
+      if(this.board[0].some(value => value === '*')) lost()
+
+      if(bottom1[0][0] === bottom2[0][0]){ 
+        this.updateCoords('*')
+        this.board.forEach((value, index) => {
+          if(value.reduce((prev,curr) => (prev === curr) ? prev : NaN) === '*') this.clearIndex(index) 
+        })
+
+        delete this.activeShape
+        let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
+        game.placeShape(shape)
+      }
+    }  
+  } 
 }
 
 const htmlBoard = document.getElementById('main-board')
-htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, 1.5vmin)`
-htmlBoard.style.gridTemplateRows = `repeat(${length}, 1.5vmin)`
+htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, 3vmin)`
+htmlBoard.style.gridTemplateRows = `repeat(${length}, 3vmin)`
 
 
 
@@ -235,21 +268,32 @@ htmlBoard.style.gridTemplateRows = `repeat(${length}, 1.5vmin)`
 document.onkeydown = function(e) {
   switch (e.keyCode) {
       case 37:
+          
           game.activeShape.moveLeft()
+          
           break;
       case 38:
+          
           game.activeShape.rotate()
+          
           break;    
       case 39:
+        
         game.activeShape.moveRight()
+        
         break;
       case 40:
-        game.step()
+        if(game.activeShape !== null){ 
+          game.step()
+          game.step()
+          game.step() 
+          game.step()
+        }
         break;
   }
 }
 
-window.setInterval(advance, 200)
+window.setInterval(advance, 400)
 
 
 /*-------------------------------- Functions --------------------------------*/
@@ -267,13 +311,16 @@ function initBoard() {
 
 function advance(){
   if(game.activeShape !== null){
-    //game.step()
+    game.step()
   }
 }
 
+function lost() {
+  message.innerHTML = 'You Lost'
+  game.clear()
+}
+
 /*-------------------------------- Main --------------------------------*/
-
-
 initBoard()
 let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
 game.placeShape(shape)

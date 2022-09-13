@@ -7,7 +7,7 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  max-width: 400px;
+  max-width: 600px;
   margin: 50px auto;
   font-family: 'Syncopate';
   text-transform: uppercase;
@@ -19,8 +19,8 @@ body {
 #main-board {
   display: grid;
   position: relative;
-  grid-template-rows: repeat(3, 15vmin);
-  grid-template-columns: repeat(3, 15vmin);
+  grid-template-rows: repeat(3, 30vmin);
+  grid-template-columns: repeat(3, 30vmin);
   grid-gap: 0vmin;
   z-index: 1;
   margin: 10px auto;
@@ -28,7 +28,7 @@ body {
 
 div {
   border: 0.5px solid black;
-  font-size: 1.6vmin;
+  font-size: 3vmin;
   text-align: center;
   vertical-align: middle;
   z-index: 1;
