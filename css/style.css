@@ -6,15 +6,17 @@ body {
 	margin: 0;
   height: 100vh;
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
   max-width: 600px;
-  margin: 50px auto;
+  margin: 0 auto;
+  padding-bottom: 10vh;
   font-family: 'Syncopate';
   text-transform: uppercase;
   text-align: center;
   overflow: hidden
 }
-
 
 #main-board {
   display: grid;
@@ -22,8 +24,7 @@ body {
   grid-template-rows: repeat(3, 30vmin);
   grid-template-columns: repeat(3, 30vmin);
   grid-gap: 0vmin;
-  z-index: 1;
-  margin: 10px auto;
+  z-index: 1;  
 }
 
 div {

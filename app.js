@@ -186,7 +186,7 @@ class Game {
     this.trailCoords = this.activeShape.getCoordinates()
     this.render()
   }
-
+ 
   clearTrail(){
     if (this.trailCoords){
       this.trailCoords.forEach(value => {
@@ -200,6 +200,17 @@ class Game {
       for (let j = 0; j < this.board[i].length; j++){
         let divElem = document.getElementById(`${i},${j}`)
         divElem.innerHTML = `${this.board[i][j]}`
+
+        if(this.board[i][j]==='1'){
+          divElem.style.backgroundColor = 'black'
+          divElem.style.color = 'black'
+        } else if(this.board[i][j]==='*'){
+          divElem.style.backgroundColor = '#0d6efd'
+          divElem.style.color = '#0d6efd'
+        } else if(this.board[i][j]==='0'){
+          divElem.style.backgroundColor = 'white'
+          divElem.style.color = '#white'
+        }
       }
     }
   }
@@ -284,9 +295,10 @@ startButton.addEventListener('click', function(e){
   shapes.push(C)
   boundary = parseInt(selectedSize,10)
   length = boundary * 2
-  htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, 3vmin)`
-  htmlBoard.style.gridTemplateRows = `repeat(${length}, 3vmin)` 
-  initGame()
+  htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, 4vmin)`
+  htmlBoard.style.gridTemplateRows = `repeat(${length}, 4vmin)` 
+
+  playGame() 
 })
 
 customBuilder.addEventListener('click', function(e){
@@ -322,16 +334,13 @@ customBuilder.addEventListener('click', function(e){
     
   }
 })
-
-
-
-
-
+ 
 /*-------------------------------- Functions --------------------------------*/
 
-function initGame() {
+function playGame() { 
 
   let game = new Game()
+  let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
 
   for (let i = 0; i < game.board.length; i++){
     for (let j = 0; j < game.board[i].length; j++){
@@ -342,13 +351,8 @@ function initGame() {
     } 
   }
 
-  let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
   game.placeShape(shape)
-
-  window.setInterval(advance(game), 400)
-
   document.addEventListener('keydown', e =>{
-  
     const keyName = e.key  
     switch (keyName) {
       case 'ArrowLeft':
@@ -367,15 +371,10 @@ function initGame() {
         break;
     }
   })
+  
+  
 }
 
- 
-
-function advance(game){
-  if(game.activeShape !== null){
-    game.step()
-  }
-}
 
 function lost() {
   message.innerHTML = 'You Lost'
