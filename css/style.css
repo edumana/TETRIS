@@ -25,10 +25,15 @@ body {
   grid-template-columns: repeat(3, 30vmin);
   grid-gap: 0vmin;
   z-index: 1;  
+  border: 2px solid #000000;
+}
+
+.boardBlock{
+  border: 0.1px solid rgba(0, 0, 0, 0.237);
+  font-size: 0vmin;
 }
 
 div {
-  border: 0.5px solid black;
   font-size: 3vmin;
   text-align: center;
   vertical-align: middle;
@@ -39,9 +44,6 @@ div {
   border:none;
 }
 
-div{
-  border:none;
-}
 
 #custom-builder {
   display: grid;

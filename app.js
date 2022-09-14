@@ -45,7 +45,6 @@ const R3 = math.matrix([
       [0,1,0], 
       [1,0,0]])
 
-const message = document.getElementById('message')
 
 const introModal = new bootstrap.Modal(document.getElementById('intro-modal'))
 const startButton = document.getElementById('start-button')
@@ -66,9 +65,9 @@ class Shape {
       this.shape = math.multiply(math.transpose(this.shape), R4)
     } else if (math.size(this.shape)._data[0] === 3) {
       this.shape = math.multiply(math.transpose(this.shape), R3)
+      
     }
 
-    console.log(game.checkCollision(this.getCoordinates(), game.board))
     if(game.checkCollision(this.getCoordinates(), game.board)){
       if (math.size(this.shape)._data[0] === 4) {
         this.shape = math.multiply(R4,math.transpose(this.shape))
@@ -209,7 +208,7 @@ class Game {
           divElem.style.color = '#0d6efd'
         } else if(this.board[i][j]==='0'){
           divElem.style.backgroundColor = 'white'
-          divElem.style.color = '#white'
+          divElem.style.color = 'white'
         }
       }
     }
@@ -220,10 +219,6 @@ class Game {
     delete this.activeShape
     delete this.trailCoords
     delete this.board
-
-    this.activeShape = null
-    this.trailCoords = null
-    this.board = new Array(length).fill('0').map(()=>new Array(boundary).fill('0'))
   }
 
   checkCollision(futurePlacement, currentBoard) {
@@ -277,14 +272,11 @@ class Game {
 let boundary = 6
 let length = boundary * 2
 let shapes = [I, J, L, O, S, T, Z]
-let C = [[1,0,0],[0,1,0],[0,0,1]]
-
-
+let C = math.matrix([[1,0,0],[0,1,0],[0,0,1]])
 
 /*----------------------------- Event Listeners -----------------------------*/
 
 startButton.addEventListener('click', function(e){
-
   let selectedSize
   for(const radioButton of radioButtons){
     if(radioButton.checked){
@@ -295,41 +287,42 @@ startButton.addEventListener('click', function(e){
   shapes.push(C)
   boundary = parseInt(selectedSize,10)
   length = boundary * 2
-  htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, 4vmin)`
-  htmlBoard.style.gridTemplateRows = `repeat(${length}, 4vmin)` 
+  let reSize = -0.1*(selectedSize) + 4.1
+  htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, ${reSize}vmin)`
+  htmlBoard.style.gridTemplateRows = `repeat(${length}, ${reSize}vmin)`  
 
-  playGame() 
+  playGame()
 })
 
 customBuilder.addEventListener('click', function(e){
   let sq = document.getElementById(e.target.id).style
   switch (e.target.id) {
     case 'cus-0':
-      C[0][0] === 0 ? (C[0][0] = 1, sq.backgroundColor = 'black') : (C[0][0] = 0, sq.backgroundColor = 'white')
+      C.get([0,0]) === 0 ? (C.set([0, 0],1), sq.backgroundColor = 'black') : (C.set([0, 0],0), sq.backgroundColor = 'white')
     break;
     case 'cus-1':
-      C[0][1] === 0 ? (C[0][1] = 1, sq.backgroundColor = 'black') : (C[0][1] = 0, sq.backgroundColor = 'white')
+      C.get([0,1]) === 0 ? (C.set([0, 1], 1), sq.backgroundColor = 'black') : (C.set([0, 1],0), sq.backgroundColor = 'white')
     break;
     case 'cus-2':
-      C[0][2] === 0 ? (C[0][2] = 1, sq.backgroundColor = 'black') : (C[0][2] = 0, sq.backgroundColor = 'white')
+      C.get([0,2]) === 0 ? (C.set([0, 2],1), sq.backgroundColor = 'black') : (C.set([0, 2],0), sq.backgroundColor = 'white')
     break;
     case 'cus-3':
-      C[1][0] === 0 ? (C[1][0] = 1, sq.backgroundColor = 'black') : (C[1][0] = 0, sq.backgroundColor = 'white')
+      C.get([1,0]) === 0 ? (C.set([1, 0],1), sq.backgroundColor = 'black') : (C.set([1, 0],0), sq.backgroundColor = 'white')
     break;
     case 'cus-4':
-      C[1][1] === 0 ? (C[1][1] = 1, sq.backgroundColor = 'black') : (C[1][1] = 0, sq.backgroundColor = 'white')
+      C.get([1,1]) === 0 ? (C.set([1, 1],1), sq.backgroundColor = 'black') : (C.set([1, 1],0), sq.backgroundColor = 'white')
     break;
     case 'cus-5':
-      C[1][2] === 0 ? (C[1][2] = 1, sq.backgroundColor = 'black') : (C[1][2] = 0, sq.backgroundColor = 'white')
+      C.get([1,2]) === 0 ? (C.set([1, 2],1), sq.backgroundColor = 'black') : (C.set([1, 2],0), sq.backgroundColor = 'white')
     break;
     case 'cus-6':
-      C[2][0] === 0 ? (C[2][0] = 1, sq.backgroundColor = 'black') : (C[2][0] = 0, sq.backgroundColor = 'white')
+      C.get([2,0]) === 0 ? (C.set([2, 0],1), sq.backgroundColor = 'black') : (C.set([2, 0],0), sq.backgroundColor = 'white')
     break;
     case 'cus-7':
-      C[2][1] === 0 ? (C[2][1] = 1, sq.backgroundColor = 'black') : (C[2][1] = 0, sq.backgroundColor = 'white')
+      C.get([2,1]) === 0 ? (C.set([2, 1],1), sq.backgroundColor = 'black') : (C.set([2, 1],0), sq.backgroundColor = 'white')
     break;
     case 'cus-8':
-      C[2][2] === 0 ? (C[2][2] = 1, sq.backgroundColor = 'black') : (C[2][2] = 0, sq.backgroundColor = 'white')
+      C.get([2,2]) === 0 ? (C.set([2, 2],1), sq.backgroundColor = 'black') : (C.set([2, 2],0) = 0, sq.backgroundColor = 'white')
     break;
     
   }
@@ -338,7 +331,6 @@ customBuilder.addEventListener('click', function(e){
 /*-------------------------------- Functions --------------------------------*/
 
 function playGame() { 
-
   let game = new Game()
   let shape = new Shape(shapes[Math.floor(Math.random()*shapes.length)])
 
@@ -347,11 +339,24 @@ function playGame() {
       let divElem = document.createElement('div')
       divElem.id = `${i},${j}`
       divElem.innerHTML = `${game.board[i][j]}`
+      divElem.style.color = 'white'
+      divElem.className = 'boardBlock'
+      htmlBoard.style.border = '2px solid black'
       htmlBoard.appendChild(divElem)
-    } 
+    }
   }
 
   game.placeShape(shape)
+
+  let selectedSize
+  for(const radioButton of radioButtons){
+    if(radioButton.checked){
+      selectedSize = radioButton.value
+    }
+  } 
+  console.log(selectedSize = selectedSize*-42+700)
+  window.setInterval((function(){game.step()}), selectedSize)
+
   document.addEventListener('keydown', e =>{
     const keyName = e.key  
     switch (keyName) {
@@ -360,30 +365,30 @@ function playGame() {
         break;
       case ' ':
         game.activeShape.rotate(game)
-        break;   
+        break;
+      case 'ArrowUp':
+        game.activeShape.rotate(game)
+        break;      
       case 'ArrowRight':
         game.activeShape.moveRight(game)
         break;
       case 'ArrowDown':
-        if (game.activeShape !== null){ 
           game.step()
-        }
+          game.step()
+          game.step()
         break;
     }
   })
-  
-  
 }
 
-
 function lost() {
-  message.innerHTML = 'You Lost'
   game.clear()
+
 }
 
 /*-------------------------------- Main --------------------------------*/
 
-introModal.show() 
+introModal.show()
 
 
 
