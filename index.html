@@ -24,9 +24,11 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">custom Tetris</h5>
+          <h5 class="modal-title" id="title">custom Tetris</h5>
           <div id="subtitle"><p>Build your own tetris game!</p></div>
+          <button type="button" id="play-again-button" class="btn btn-primary">Play Again</button>
         </div>
+        <wrap id="section-to-hide">
         <div class="modal-body">
           <div class="container-fluid">
             <h6>Pick board width:</h6>
@@ -67,11 +69,15 @@
         <div class="modal-footer">
           <button type="button" id="start-button" class="btn btn-primary">Start</button>
         </div>
+      </wrap>
       </div>
     </div>
   </div>
   
 
+
+  <score><h4>Score:  </h4>
+    <h4 id="score"><span style="font-weight: bold;">0</span></h4></score>
 	<div class="main-board" id="main-board">
 
 

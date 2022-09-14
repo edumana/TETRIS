@@ -52,6 +52,12 @@ const radioButtons = document.querySelectorAll('input[name="options"]')
 const customBuilder = document.getElementById('custom-builder')
 const htmlBoard = document.getElementById('main-board')
 
+const sectionToHide = document.getElementById('section-to-hide')
+const playAgainButton = document.getElementById('play-again-button')
+const title = document.getElementById('title')
+const subtitle = document.getElementById('subtitle')
+const score = document.getElementById('score')
+
 
 /*-------------------------------- Classes --------------------------------*/
 class Shape {
@@ -185,7 +191,7 @@ class Game {
     this.trailCoords = this.activeShape.getCoordinates()
     this.render()
   }
- 
+
   clearTrail(){
     if (this.trailCoords){
       this.trailCoords.forEach(value => {
@@ -215,10 +221,23 @@ class Game {
   }
 
   clear(){
-
     delete this.activeShape
     delete this.trailCoords
     delete this.board
+    delete this
+
+    globalScore = 0
+
+    htmlBoard.innerHTML = ''
+    
+    introModal.show()
+    playAgainButton.style.display = 'block'
+    sectionToHide.style.display = 'none'
+
+    title.innerHTML = "You lost!"
+    title.style.fontSize = '1.2em'
+    subtitle.style.fontSize = '0.65em'
+    subtitle.innerHTML = "But you can play again!"
   }
 
   checkCollision(futurePlacement, currentBoard) {
@@ -231,6 +250,9 @@ class Game {
   }
 
   clearIndex(index) {
+
+    globalScore += 100
+    score.innerHTML = `${globalScore}`
 
     this.board[index].forEach((value, index, array) => {array[index] = '0'} )
     
@@ -252,7 +274,7 @@ class Game {
       this.activeShape.fall(this)
       let bottom2 = this.activeShape.getBottomEdge()
 
-      if(this.board[0].some(value => value === '*')) lost()
+      if(this.board[0].some(value => value === '*')) this.clear()
 
       if(bottom1[0][0] === bottom2[0][0]){ 
         this.updateCoords('*')
@@ -271,8 +293,10 @@ class Game {
 /*---------------------------- Variables (state) ----------------------------*/
 let boundary = 6
 let length = boundary * 2
-let shapes = [I, J, L, O, S, T, Z]
-let C = math.matrix([[1,0,0],[0,1,0],[0,0,1]])
+let C = math.matrix([[1,0,1],[1,0,1],[0,0,0]])
+let shapes = [I, J, L, O, S, T, Z, C]
+let globalScore = 0
+
 
 /*----------------------------- Event Listeners -----------------------------*/
 
@@ -284,12 +308,13 @@ startButton.addEventListener('click', function(e){
     }
   }
   introModal.hide()
-  shapes.push(C)
-  boundary = parseInt(selectedSize,10)
+  shapes[7] = C
+  boundary = parseInt(selectedSize, 10)
   length = boundary * 2
   let reSize = -0.1*(selectedSize) + 4.1
   htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, ${reSize}vmin)`
-  htmlBoard.style.gridTemplateRows = `repeat(${length}, ${reSize}vmin)`  
+  htmlBoard.style.gridTemplateRows = `repeat(${length}, ${reSize}vmin)`
+  score.innerHTML = globalScore
 
   playGame()
 })
@@ -322,12 +347,23 @@ customBuilder.addEventListener('click', function(e){
       C.get([2,1]) === 0 ? (C.set([2, 1],1), sq.backgroundColor = 'black') : (C.set([2, 1],0), sq.backgroundColor = 'white')
     break;
     case 'cus-8':
-      C.get([2,2]) === 0 ? (C.set([2, 2],1), sq.backgroundColor = 'black') : (C.set([2, 2],0) = 0, sq.backgroundColor = 'white')
+      C.get([2,2]) === 0 ? (C.set([2, 2],1), sq.backgroundColor = 'black') : (C.set([2, 2],0), sq.backgroundColor = 'white')
     break;
     
   }
 })
  
+
+playAgainButton.addEventListener('click', function(e){
+
+  playAgainButton.style.display = 'none'
+  sectionToHide.style.display = 'contents'
+  title.innerHTML = "Custom tetris"
+  subtitle.innerHTML = "Build your own tetris game!"
+  title.style.fontSize = '1em'
+  subtitle.style.fontSize = '0.55em'
+  introModal.show()
+})
 /*-------------------------------- Functions --------------------------------*/
 
 function playGame() { 
@@ -354,8 +390,8 @@ function playGame() {
       selectedSize = radioButton.value
     }
   } 
-  console.log(selectedSize = selectedSize*-42+700)
-  window.setInterval((function(){game.step()}), selectedSize)
+  selectedSize = selectedSize*-17+500
+  window.setInterval((function(){if(game) game.step()}), selectedSize)
 
   document.addEventListener('keydown', e =>{
     const keyName = e.key  
@@ -373,22 +409,21 @@ function playGame() {
         game.activeShape.moveRight(game)
         break;
       case 'ArrowDown':
+        if(game){
           game.step()
           game.step()
           game.step()
+        }
+          
         break;
     }
   })
 }
 
-function lost() {
-  game.clear()
-
-}
-
 /*-------------------------------- Main --------------------------------*/
 
 introModal.show()
+
 
 
 
