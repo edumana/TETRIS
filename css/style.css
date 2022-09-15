@@ -169,10 +169,13 @@ h6{
 }
 
 
+
 .btn.btn-outline-primary{
-  width:20%;
+  width:22%;
   font-family: 'Syncopate';
   font-weight: bold;
+  margin: 0 6px;
+
 }
 
 #cus-0{
@@ -198,4 +201,9 @@ h6{
   width: 60%;
   border: none;
   margin: 30px auto 20px auto;
+}
+
+#final-score{
+  display:none;
+  margin-top: 20px;
 }

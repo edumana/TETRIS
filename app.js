@@ -57,6 +57,7 @@ const playAgainButton = document.getElementById('play-again-button')
 const title = document.getElementById('title')
 const subtitle = document.getElementById('subtitle')
 const score = document.getElementById('score')
+const finalScore = document.getElementById('final-score')
 
 
 /*-------------------------------- Classes --------------------------------*/
@@ -226,18 +227,20 @@ class Game {
     delete this.board
     delete this
 
-    globalScore = 0
 
     htmlBoard.innerHTML = ''
     
     introModal.show()
+    finalScore.innerHTML = globalScore
+    globalScore = 0
+    finalScore.style.display = 'block'
     playAgainButton.style.display = 'block'
     sectionToHide.style.display = 'none'
 
     title.innerHTML = "You lost!"
     title.style.fontSize = '1.2em'
     subtitle.style.fontSize = '0.65em'
-    subtitle.innerHTML = "But you can play again!"
+    subtitle.innerHTML = "Your final score: "
   }
 
   checkCollision(futurePlacement, currentBoard) {
@@ -314,7 +317,7 @@ startButton.addEventListener('click', function(e){
   let reSize = -0.1*(selectedSize) + 4.1
   htmlBoard.style.gridTemplateColumns = `repeat(${boundary}, ${reSize}vmin)`
   htmlBoard.style.gridTemplateRows = `repeat(${length}, ${reSize}vmin)`
-  score.innerHTML = globalScore
+  score.innerHTML = 0
 
   playGame()
 })
@@ -362,6 +365,8 @@ playAgainButton.addEventListener('click', function(e){
   subtitle.innerHTML = "Build your own tetris game!"
   title.style.fontSize = '1em'
   subtitle.style.fontSize = '0.55em'
+  finalScore.innerHTML = 0
+  finalScore.style.display = 'none'
   introModal.show()
 })
 /*-------------------------------- Functions --------------------------------*/
