@@ -3,7 +3,6 @@
 # Game Information
 - Link to the game: <a href="https://custom-tetris.netlify.app//" target="_blank">Custom Tetris - Build Your Own Tetris Game</a> game
 - Custom Tetris allows the user to play a classic tetris game with a twist. Select the size of the board and build one custom shape to increase your chances of a high score.
-
   
 # Technologies Used
 - JavaScript
@@ -14,5 +13,6 @@
 
 # Future Features
 - Add mobile controls
+- Add server to save high scores and the custom shape they used to score it.
 
 

@@ -8,9 +8,6 @@
 |
 */
 
-
-
-
 /*-------------------------------- Constants --------------------------------*/
 
 /*
@@ -132,7 +129,6 @@ class Shape {
     while(this.getLeftmost() < 0) this.moveRight()
     while(this.getRightmost() > boundary - 1) this.moveLeft()
 
-
     //Update the board with the new coordinates. 1 is used as a placeholder for taken space by a shape
     game.updateCoords('1')
   }
@@ -223,7 +219,6 @@ class Shape {
     }
   }
 }
-
 
 /*
 |
